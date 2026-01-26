@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panic Control - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --red-primary: #d32f2f;
+            --red-dark: #b71c1c;
+            --red-darker: #7f0000;
+            --red-light: #ffebee;
+            --green-primary: #388e3c;
+            --green-dark: #2e7d32;
+            --green-light: #e8f5e9;
+            --yellow-primary: #f57c00;
+            --yellow-light: #fff3e0;
+            --gray-50: #ffffff;
+            --gray-100: #f5f5f5;
+            --gray-200: #eeeeee;
+            --gray-300: #e0e0e0;
+            --gray-400: #bdbdbd;
+            --gray-500: #9e9e9e;
+            --gray-600: #757575;
+            --gray-700: #616161;
+            --gray-800: #424242;
+            --gray-900: #212121;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #333333;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-weight: 400;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--red-primary) 0%, #c62828 100%);
+            padding: 0 40px;
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.15);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 500;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+
+        .logo span {
+            color: white;
+            font-weight: 600;
+        }
+
+        .logo-image {
+            max-width: 140px;
+            height: auto;
+            display: block;
+        }
+
+        .header-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            animation: pulse 2s infinite;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-info {
+            color: var(--gray-300);
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+            color: white;
+        }
+
+        /* Main Content */
+        .main {
+            padding: 36px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 28px;
+            margin-bottom: 36px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 32px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 2px solid var(--red-primary);
+            border-left: 4px solid var(--red-primary);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 8px 24px rgba(211, 47, 47, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--red-primary) 0%, transparent 70%);
+            opacity: 0.08;
+            border-radius: 50%;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888888;
+            font-weight: 400;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 44px;
+            font-weight: 600;
+            color: var(--red-primary);
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+        .stat-card.red .stat-value {
+            color: var(--red-primary);
+        }
+
+        /* Panic Section */
+        .panic-section {
+            background: linear-gradient(135deg, var(--red-primary) 0%, #c62828 100%);
+            border-radius: 14px;
+            padding: 36px;
+            margin-bottom: 32px;
+            color: white;
+            box-shadow: 0 8px 24px rgba(211, 47, 47, 0.18);
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panic-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #dc2626;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .panic-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .panic-title {
+            font-size: 18px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .panic-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .panic-all-btn {
+            background: white;
+            color: var(--red-primary);
+            border: none;
+            padding: 14px 36px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .panic-all-btn:hover {
+            background: rgba(255, 255, 255, 0.95);
+            color: #c62828;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .panic-all-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Hash Section */
+        .hash-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            backdrop-filter: blur(8px);
+            margin-top: 16px;
+        }
+
+        .hash-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .hash-label {
+            font-size: 12px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .hash-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            outline: none;
+            transition: all 0.2s;
+            letter-spacing: 1.5px;
+        }
+
+        .hash-input:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .hash-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .hash-input[type="password"] {
+            letter-spacing: 3px;
+        }
+
+        .hash-toggle-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 6px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 15px;
+        }
+
+        .hash-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .hash-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hash-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+        }
+
+        .hash-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Setores Grid */
+        .section-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333333;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.4px;
+            border-bottom: 2px solid var(--red-primary);
+            padding-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .setores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 28px;
+            margin-bottom: 36px;
+        }
+
+        .setor-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 2px solid var(--red-primary);
+        }
+
+        .setor-card:hover {
+            box-shadow: 0 12px 32px rgba(211, 47, 47, 0.1);
+            transform: translateY(-6px);
+            border-color: var(--red-primary);
+        }
+
+        .setor-header {
+            background: linear-gradient(135deg, var(--red-primary) 0%, #c62828 100%);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: none;
+        }
+
+        .setor-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #ffffff;
+            letter-spacing: 0.2px;
+        }
+
+        .setor-count {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 18px;
+            font-size: 11px;
+            font-weight: 400;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .setor-body {
+            padding: 18px;
+            background: white;
+        }
+
+        .setor-devices {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .device-chip {
+            background: #ffffff;
+            color: var(--red-primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--red-primary);
+            font-weight: 400;
+            box-shadow: none;
+        }
+
+        .device-chip:hover {
+            background: linear-gradient(135deg, var(--red-primary) 0%, #c62828 100%);
+            color: white;
+            box-shadow: 0 6px 16px rgba(211, 47, 47, 0.15);
+            transform: translateY(-2px);
+            border-color: var(--red-primary);
+        }
+
+        .device-chip.success {
+            background: var(--green-light);
+            color: var(--green-dark);
+            border-color: var(--green-primary);
+        }
+
+        .device-chip.error {
+            background: var(--red-light);
+            color: var(--red-dark);
+            border-color: var(--red-primary);
+        }
+
+        .setor-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .setor-btn {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .setor-btn.panic {
+            background: var(--red-primary);
+            color: white;
+            font-weight: 500;
+            border: none;
+            box-shadow: 0 2px 6px rgba(211, 47, 47, 0.15);
+        }
+
+        .setor-btn.panic:hover {
+            background: #c62828;
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .setor-btn.test {
+            background: #ffffff;
+            color: var(--red-primary);
+            border: 1px solid var(--red-primary);
+        }
+
+        .setor-btn.test:hover {
+            background: var(--red-primary);
+            color: white;
+        }
+
+        .setor-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Log Section */
+        .log-section {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 2px solid var(--red-primary);
+        }
+
+        .log-header {
+            background: linear-gradient(135deg, var(--red-primary) 0%, #c62828 100%);
+            color: white;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .log-title {
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.2px;
+        }
+
+        .log-clear-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 400;
+        }
+
+        .log-clear-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+        }
+
+        .log-content {
+            padding: 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            background: white;
+            color: #1f2937;
+        }
+
+        .log-entry {
+            padding: 11px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: #a0a0a0;
+            flex-shrink: 0;
+            font-weight: 400;
+            min-width: 70px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+        }
+
+        .log-message {
+            flex: 1;
+            color: #555555;
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .log-entry.success .log-message {
+            color: #15803d;
+            font-weight: 400;
+        }
+
+        .log-entry.error .log-message {
+            color: #c62828;
+            font-weight: 400;
+        }
+
+        .log-entry.info .log-message {
+            color: #d97706;
+            font-weight: 400;
+        }
+
+        .log-empty {
+            padding: 40px;
+            text-align: center;
+            color: var(--gray-500);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            max-width: 480px;
+            width: 100%;
+            overflow: hidden;
+            animation: modalIn 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--red-primary) 0%, #c62828 100%);
+            color: white;
+            padding: 28px 24px;
+            text-align: center;
+        }
+
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .modal-body {
+            padding: 28px 24px;
+            text-align: center;
+        }
+
+        .modal-text {
+            color: #7a7a7a;
+            margin-bottom: 24px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn.cancel {
+            background: #ffffff;
+            color: var(--red-primary);
+            border: 2px solid var(--red-primary);
+        }
+
+        .modal-btn.cancel:hover {
+            background: var(--red-primary);
+            color: white;
+        }
+
+        .modal-btn.confirm {
+            background: var(--red-primary);
+            color: white;
+        }
+
+        .modal-btn.confirm:hover {
+            background: #c62828;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            background: #333333;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            animation: toastIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 400;
+        }
+
+        .toast.success {
+            background: #2d6a4f;
+        }
+
+        .toast.error {
+            background: #a71930;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Animações de entrada */
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .header {
+            animation: slideInDown 0.5s ease-out;
+        }
+
+        .stats-grid > * {
+            animation: fadeInScale 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .stats-grid > :nth-child(1) { animation-delay: 0.1s; }
+        .stats-grid > :nth-child(2) { animation-delay: 0.2s; }
+        .stats-grid > :nth-child(3) { animation-delay: 0.3s; }
+
+        .panic-section {
+            animation: slideInUp 0.5s ease-out 0.2s both;
+        }
+
+        .section-title {
+            animation: slideInUp 0.5s ease-out 0.3s both;
+        }
+
+        .setor-card {
+            animation: slideInUp 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .log-section {
+            animation: slideInUp 0.6s ease-out 0.4s both;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 12px;
+                height: 56px;
+            }
+
+            .header-badge {
+                display: none;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .header-right {
+                gap: 12px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .logout-btn {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+
+            .main {
+                padding: 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 16px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .panic-section {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .panic-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .panic-title {
+                font-size: 16px;
+            }
+
+            .panic-all-btn {
+                width: 100%;
+                padding: 12px 16px;
+                font-size: 14px;
+                margin-top: 8px;
+            }
+
+            .hash-section {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .hash-input {
+                min-width: auto;
+                min-height: 44px;
+                font-size: 16px;
+                padding: 12px;
+            }
+
+            .hash-btn {
+                min-height: 44px;
+                font-size: 14px;
+            }
+
+            .setores-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .setor-card {
+                border-radius: 12px;
+            }
+
+            .setor-header {
+                padding: 12px;
+            }
+
+            .setor-body {
+                padding: 12px;
+            }
+
+            .setor-devices {
+                gap: 4px;
+                margin-bottom: 12px;
+            }
+
+            .device-chip {
+                padding: 3px 6px;
+                font-size: 10px;
+                min-height: 28px;
+                display: flex;
+                align-items: center;
+            }
+
+            .setor-actions {
+                gap: 6px;
+            }
+
+            .setor-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+                min-height: 40px;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+
+            .log-content {
+                max-height: 200px;
+            }
+
+            .log-entry {
+                padding: 8px 12px;
+                font-size: 12px;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0 8px;
+                height: 52px;
+            }
+
+            .header-left {
+                gap: 12px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .logout-btn {
+                padding: 4px 10px;
+                font-size: 12px;
+            }
+
+            .main {
+                padding: 8px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 12px;
+            }
+
+            .stat-label {
+                font-size: 11px;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+
+            .panic-section {
+                padding: 12px;
+                margin-bottom: 16px;
+            }
+
+            .panic-title {
+                font-size: 14px;
+            }
+
+            .panic-all-btn {
+                padding: 10px 14px;
+                font-size: 12px;
+            }
+
+            .hash-section {
+                gap: 8px;
+            }
+
+            .hash-label {
+                font-size: 12px;
+            }
+
+            .hash-input {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .hash-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .setor-card {
+                border-radius: 10px;
+            }
+
+            .setor-name {
+                font-size: 14px;
+            }
+
+            .setor-count {
+                font-size: 11px;
+                padding: 2px 8px;
+            }
+
+            .setor-header {
+                padding: 10px;
+            }
+
+            .setor-body {
+                padding: 10px;
+            }
+
+            .setor-actions {
+                gap: 4px;
+            }
+
+            .setor-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+                min-height: 36px;
+            }
+
+            .section-title {
+                font-size: 14px;
+            }
+
+            .log-entry {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+
+            .toast {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+        }
+
+        /* Melhorias de toque */
+        button {
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        input,
+        button {
+            min-height: 44px;
+        }
+
+        /* Melhorias de acessibilidade */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* Tema escuro */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: white;
+            }
+
+            .stat-card,
+            .setor-card,
+            .log-section,
+            .modal {
+                background: #1e293b;
+                color: #f1f5f9;
+            }
+
+            .setor-header {
+                background: #334155;
+            }
+
+            .setor-name {
+                color: #f1f5f9;
+            }
+
+            .form-input {
+                background: #334155;
+                color: #f1f5f9;
+                border-color: #475569;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <img src="{{ url_for('static', filename='logo-bepass.png') }}" alt="Bepass" class="logo-image">
+            <div class="header-badge">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                PANIC CONTROL
+            </div>
+        </div>
+        <div class="header-right">
+            <span class="user-info">Logado como: <strong>{{ session.username }}</strong></span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Sair</a>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total de Dispositivos</div>
+                <div class="stat-value">{{ total_devices }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Setores</div>
+                <div class="stat-value">{{ total_setores }}</div>
+            </div>
+            <div class="stat-card red">
+                <div class="stat-label">Hash Ativo</div>
+                <div class="stat-value" style="font-size: 16px; font-family: 'Courier New', monospace;">{{ panic_hash[:12] }}...</div>
+            </div>
+        </div>
+
+        <!-- Panic Section -->
+        <div class="panic-section">
+            <div class="panic-header">
+                <div class="panic-title">
+                    <svg class="panic-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    Modo Pânico - Liberação Total
+                </div>
+                <button class="panic-all-btn" onclick="confirmPanicAll()">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    LIBERAR TODO ESTÁDIO
+                </button>
+            </div>
+            
+            <div class="hash-section">
+                <span class="hash-label">Hash de Pânico:</span>
+                <div class="hash-container">
+                    <input
+                        type="password"
+                        class="hash-input"
+                        id="panicHash"
+                        value="{{ panic_hash }}"
+                        placeholder="Digite o hash de pânico do dia"
+                    >
+                    <button class="hash-toggle-btn" id="hashToggleBtn" title="Mostrar/Esconder hash">🔒</button>
+                </div>
+                <button class="hash-btn" id="updateHashBtn" onclick="updateHash()">Atualizar Hash</button>
+                <button class="hash-btn" id="cancelBtn" style="display: none; background: rgba(255, 100, 100, 0.4);" onclick="cancelOperation()">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Setores -->
+        <h2 class="section-title">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+            Setores / Portões
+        </h2>
+        
+        <div class="setores-grid">
+            {% for setor in setores %}
+            <div class="setor-card" data-setor="{{ setor.id }}">
+                <div class="setor-header">
+                    <span class="setor-name">{{ setor.nome }}</span>
+                    <span class="setor-count">{{ setor.count }} dispositivos</span>
+                </div>
+                <div class="setor-body">
+                    <div class="setor-devices">
+                        {% for device in setor.dispositivos %}
+                        <span 
+                            class="device-chip" 
+                            data-ip="{{ device.ip_rasp }}"
+                            data-bebox="{{ device.bebox }}"
+                            title="BeBox {{ device.bebox }} - {{ device.ip_rasp }}"
+                            onclick="panicDevice('{{ device.ip_rasp }}', {{ device.bebox }})"
+                        >
+                            {{ device.bebox }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                    <div class="setor-actions">
+                        <button class="setor-btn panic" onclick="panicSetor('{{ setor.id }}', '{{ setor.nome }}')">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Pânico
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Logs -->
+        <div class="log-section">
+            <div class="log-header">
+                <span class="log-title">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Log de Execução
+                </span>
+                <button class="log-clear-btn" onclick="clearLogs()">Limpar</button>
+            </div>
+            <div class="log-content" id="logContent">
+                <div class="log-empty">Nenhuma ação executada ainda</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Confirmação -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <div class="modal-header">
+                <svg class="modal-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <div class="modal-title" id="modalTitle">Confirmar Ação</div>
+            </div>
+            <div class="modal-body">
+                <p class="modal-text" id="modalText">Tem certeza que deseja executar esta ação?</p>
+                <div class="modal-actions">
+                    <button class="modal-btn cancel" onclick="closeModal()">Cancelar</button>
+                    <button class="modal-btn confirm" id="modalConfirmBtn">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        let pendingAction = null;
+        let abortController = null;
+        let isExecuting = false;
+        let lastLogCount = 0;
+        let pollInterval = null;
+
+        async function syncLogs() {
+            try {
+                const response = await fetch('/api/logs', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+
+                if (data.logs && data.logs.length > lastLogCount) {
+                    const newLogs = data.logs.slice(0, data.logs.length - lastLogCount);
+                    newLogs.reverse().forEach(log => {
+                        const logContent = document.getElementById('logContent');
+                        const empty = logContent.querySelector('.log-empty');
+                        if (empty) empty.remove();
+
+                        const entry = document.createElement('div');
+                        entry.className = `log-entry ${log.type}`;
+                        entry.innerHTML = `
+                            <span class="log-time">[${log.time}]</span>
+                            <span class="log-message">${log.message}</span>
+                        `;
+                        logContent.appendChild(entry);
+                    });
+                    lastLogCount = data.logs.length;
+                }
+
+                if (data.is_active && !isExecuting) {
+                    document.getElementById('cancelBtn').style.display = 'block';
+                    document.getElementById('updateHashBtn').style.display = 'none';
+                } else if (!data.is_active && isExecuting) {
+                    document.getElementById('cancelBtn').style.display = 'none';
+                    document.getElementById('updateHashBtn').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erro ao sincronizar logs:', error);
+            }
+        }
+
+        function startSync() {
+            if (!pollInterval) {
+                pollInterval = setInterval(syncLogs, 1000);
+                syncLogs();
+            }
+        }
+
+        function stopSync() {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            syncLogs();
+            startSync();
+        });
+        window.addEventListener('beforeunload', stopSync);
+        const hashInput = document.getElementById('panicHash');
+        const hashToggleBtn = document.getElementById('hashToggleBtn');
+
+        hashToggleBtn.addEventListener('click', () => {
+            const isPassword = hashInput.type === 'password';
+            hashInput.type = isPassword ? 'text' : 'password';
+            hashToggleBtn.textContent = isPassword ? '🔓' : '🔒';
+            hashInput.focus();
+        });
+
+        function cancelOperation() {
+            if (abortController) {
+                abortController.abort();
+                isExecuting = false;
+                document.getElementById('cancelBtn').style.display = 'none';
+                document.getElementById('updateHashBtn').style.display = 'block';
+                addLog('❌ Operação cancelada pelo usuário', 'error');
+                showToast('Operação cancelada', 'error');
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${type === 'success' 
+                        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>'
+                        : type === 'error'
+                        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>'
+                        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'}
+                </svg>
+                ${message}
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'toastIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function addLog(message, type = 'info') {
+            const logContent = document.getElementById('logContent');
+            const empty = logContent.querySelector('.log-empty');
+            if (empty) empty.remove();
+
+            const now = new Date();
+            const time = now.toLocaleTimeString('pt-BR');
+            
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span class="log-message">${message}</span>
+            `;
+            
+            logContent.insertBefore(entry, logContent.firstChild);
+        }
+
+        function clearLogs() {
+            const logContent = document.getElementById('logContent');
+            logContent.innerHTML = '<div class="log-empty">Nenhuma ação executada ainda</div>';
+        }
+
+        function showModal(title, text, onConfirm) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalText').textContent = text;
+            document.getElementById('confirmModal').classList.add('active');
+            
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            confirmBtn.onclick = () => {
+                closeModal();
+                onConfirm();
+            };
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        async function updateHash() {
+            const hashInput = document.getElementById('panicHash');
+            const newHash = hashInput.value.trim();
+            
+            if (!newHash) {
+                showToast('Hash não pode estar vazio', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/hash', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ hash: newHash })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('Hash atualizado com sucesso', 'success');
+                    addLog(`Hash atualizado: ${newHash.substring(0, 12)}...`, 'success');
+                } else {
+                    showToast('Erro ao atualizar hash', 'error');
+                }
+            } catch (error) {
+                showToast('Erro de conexão', 'error');
+            }
+        }
+
+        async function panicDevice(ip, beboxId) {
+            showModal(
+                'Pânico Individual',
+                `Enviar comando de pânico para BeBox ${beboxId} (${ip})?`,
+                async () => {
+                    if (isExecuting) return;
+                    isExecuting = true;
+                    abortController = new AbortController();
+
+                    addLog(`⏳ Enviando pânico para BeBox ${beboxId} (${ip})...`, 'info');
+
+                    const chip = document.querySelector(`[data-bebox="${beboxId}"]`);
+                    if (chip) chip.classList.add('loading');
+
+                    try {
+                        const response = await fetch('/api/panic/device', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ ip: ip, bebox_id: beboxId }),
+                            signal: abortController.signal
+                        });
+
+                        const data = await response.json();
+
+                        if (chip) {
+                            chip.classList.remove('loading');
+                        }
+
+                        if (data.success) {
+                            showToast(`BeBox ${beboxId} liberado!`, 'success');
+                            addLog(`✓ BeBox ${beboxId} (IP: ${ip}) - LIBERADO`, 'success');
+                        } else {
+                            showToast(`Falha no BeBox ${beboxId}`, 'error');
+                            const errorMsg = data.output || 'Erro desconhecido';
+                            addLog(`✗ BeBox ${beboxId} (IP: ${ip}) - ERRO: ${errorMsg}`, 'error');
+                        }
+                    } catch (error) {
+                        if (error.name === 'AbortError') {
+                            if (chip) chip.classList.remove('loading');
+                            return;
+                        }
+                        if (chip) {
+                            chip.classList.remove('loading');
+                            chip.classList.add('error');
+                        }
+                        showToast('Erro de conexão', 'error');
+                        addLog(`✗ BeBox ${beboxId} (IP: ${ip}) - Erro de conexão: ${error.message}`, 'error');
+                    } finally {
+                        isExecuting = false;
+                        abortController = null;
+                    }
+                }
+            );
+        }
+
+        async function panicSetor(setorId, setorNome) {
+            showModal(
+                'Pânico de Setor',
+                `Enviar comando de pânico para TODOS os dispositivos do ${setorNome}?`,
+                async () => {
+                    if (isExecuting) return;
+                    isExecuting = true;
+                    abortController = new AbortController();
+
+                    addLog(`⏳ Iniciando pânico no setor ${setorNome}...`, 'info');
+
+                    const card = document.querySelector(`[data-setor="${setorId}"]`);
+                    const btn = card.querySelector('.setor-btn.panic');
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner"></span> Executando...';
+
+                    document.getElementById('cancelBtn').style.display = 'block';
+                    document.getElementById('updateHashBtn').style.display = 'none';
+
+                    try {
+                        const response = await fetch('/api/panic/setor', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ setor_id: setorId }),
+                            signal: abortController.signal
+                        });
+
+                        const data = await response.json();
+
+                        if (data.results) {
+                            data.results.forEach(result => {
+                                if (result.success) {
+                                    addLog(`✓ BeBox ${result.bebox} (IP: ${result.ip}) - LIBERADO`, 'success');
+                                } else {
+                                    addLog(`✗ BeBox ${result.bebox} (IP: ${result.ip}) - ERRO: ${result.output || 'Erro desconhecido'}`, 'error');
+                                }
+                            });
+                        }
+
+                        btn.disabled = false;
+                        btn.innerHTML = `
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Pânico
+                        `;
+
+                        showToast(`${setorNome}: ${data.success_count}/${data.total} liberados`, data.failed_count === 0 ? 'success' : 'error');
+                        addLog(`📊 ${setorNome} - Resumo: ${data.success_count} ✓ sucesso, ${data.failed_count} ✗ falhas`, data.failed_count === 0 ? 'success' : 'error');
+
+                    } catch (error) {
+                        if (error.name === 'AbortError') {
+                            btn.disabled = false;
+                            btn.innerHTML = `
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                Pânico
+                            `;
+                            return;
+                        }
+                        btn.disabled = false;
+                        btn.innerHTML = `
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Pânico
+                        `;
+                        showToast('Erro de conexão', 'error');
+                        addLog(`❌ ${setorNome}: Erro de conexão - ${error.message}`, 'error');
+                    } finally {
+                        isExecuting = false;
+                        abortController = null;
+                        document.getElementById('cancelBtn').style.display = 'none';
+                        document.getElementById('updateHashBtn').style.display = 'block';
+                    }
+                }
+            );
+        }
+
+        function confirmPanicAll() {
+            showModal(
+                '⚠️ PÂNICO TOTAL',
+                'ATENÇÃO: Isso vai liberar TODAS as catracas do estádio. Tem certeza absoluta?',
+                async () => {
+                    if (isExecuting) return;
+                    isExecuting = true;
+                    abortController = new AbortController();
+
+                    addLog('⏳ ⚠️ INICIANDO PÂNICO TOTAL DO ESTÁDIO...', 'info');
+
+                    const btn = document.querySelector('.panic-all-btn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner"></span> EXECUTANDO...';
+
+                    document.getElementById('cancelBtn').style.display = 'block';
+                    document.getElementById('updateHashBtn').style.display = 'none';
+
+                    try {
+                        const response = await fetch('/api/panic/all', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            signal: abortController.signal
+                        });
+
+                        const data = await response.json();
+
+                        if (data.results_by_setor) {
+                            let successCount = 0;
+                            let failureDetails = [];
+
+                            Object.entries(data.results_by_setor).forEach(([setorId, setor]) => {
+                                setor.results.forEach(result => {
+                                    if (result.success) {
+                                        successCount++;
+                                        addLog(`✓ BeBox ${result.bebox} (IP: ${result.ip}) - LIBERADO`, 'success');
+                                    } else {
+                                        failureDetails.push(`BeBox ${result.bebox} (${result.ip})`);
+                                        addLog(`✗ BeBox ${result.bebox} (IP: ${result.ip}) - ERRO: ${result.output || 'Erro desconhecido'}`, 'error');
+                                    }
+                                });
+                            });
+
+                            if (failureDetails.length > 0) {
+                                addLog(`📋 FALHAS em ${failureDetails.length} device(s): ${failureDetails.join(', ')}`, 'error');
+                            }
+                        }
+
+                        btn.disabled = false;
+                        btn.innerHTML = `
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            LIBERAR TODO ESTÁDIO
+                        `;
+
+                        showToast(`ESTÁDIO: ${data.success_count}/${data.total} liberados`, data.failed_count === 0 ? 'success' : 'error');
+                        addLog(`📊 PÂNICO TOTAL - Resumo: ${data.success_count} ✓ sucesso, ${data.failed_count} ✗ falhas em ${data.total} dispositivos`, data.failed_count === 0 ? 'success' : 'error');
+
+                    } catch (error) {
+                        if (error.name === 'AbortError') {
+                            btn.disabled = false;
+                            btn.innerHTML = `
+                                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                LIBERAR TODO ESTÁDIO
+                            `;
+                            return;
+                        }
+                        btn.disabled = false;
+                        btn.innerHTML = `
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            LIBERAR TODO ESTÁDIO
+                        `;
+                        showToast('Erro de conexão', 'error');
+                        addLog(`❌ PÂNICO TOTAL: Erro de conexão - ${error.message}`, 'error');
+                    } finally {
+                        isExecuting = false;
+                        abortController = null;
+                        document.getElementById('cancelBtn').style.display = 'none';
+                        document.getElementById('updateHashBtn').style.display = 'block';
+                    }
+                }
+            );
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        document.getElementById('confirmModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) closeModal();
+        });
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        const handleSwipe = () => {
+            if (touchEndX < touchStartX - 50) {
+            }
+            if (touchEndX > touchStartX + 50) {
+            }
+        };
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        if (window.innerWidth < 768) {
+            document.addEventListener('touchmove', e => {
+                if (e.target.closest('input, button, [role="button"]')) {
+                    return;
+                }
+            }, { passive: true });
+        }
+
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (navigator.vibrate) {
+                    navigator.vibrate(10);
+                }
+            });
+        });
+
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.setor-card, .stat-card').forEach(card => {
+            card.style.opacity = '0.8';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

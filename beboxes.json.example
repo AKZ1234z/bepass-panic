@@ -1,0 +1,20 @@
+{
+  "setores": {
+    "2": {
+      "nome": "Portão 2",
+      "dispositivos": [
+        {"bebox": 1593, "ip_rasp": "192.168.1.10", "ip_leitor": "192.168.1.110"},
+        {"bebox": 1753, "ip_rasp": "192.168.1.11", "ip_leitor": "192.168.1.111"}
+      ]
+    },
+    "4": {
+      "nome": "Portão 4",
+      "dispositivos": [
+        {"bebox": 1584, "ip_rasp": "192.168.1.20", "ip_leitor": "192.168.1.120"},
+        {"bebox": 1586, "ip_rasp": "192.168.1.21", "ip_leitor": "192.168.1.121"},
+        {"bebox": 1608, "ip_rasp": "192.168.1.22", "ip_leitor": "192.168.1.122"},
+        {"bebox": 1624, "ip_rasp": "192.168.1.23", "ip_leitor": "192.168.1.123"}
+      ]
+    }
+  }
+}
