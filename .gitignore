@@ -59,3 +59,27 @@ logs/
 
 # OS
 Thumbs.db
+panic_auth.json
+login_users.json
+credentials_summary.txt
+rate_limit_config.json
+DOCUMENTACAO_PANIC_CONTROL_v2.md
+
+# Scripts temporarios
+add_endpoint.py
+add_login_useres.sh
+fix_hash.py
+setup_autpo_hash.sh
+setup_hash.py
+setup_panic_security.sh
+update_hash_func.py
+
+# Backups de templates
+templates/*.bak
+templates/*_old*.html
+
+# Node
+node_modules/
+package-lock.json
+data/
+logs/
